@@ -221,9 +221,12 @@ static void blake2b_compress_ref( blake2b_state *S, const uint8_t block[BLAKE2B_
 #undef ROUND
 
 void blake2b_compress_sse2( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] );
+void blake2b_compress_sse41( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] );
 
 static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] )
 {
+	if (cpu_has_feature(CPU_FLAG_SSE41))
+		return blake2b_compress_sse41(S, block);
 	if (cpu_has_feature(CPU_FLAG_SSE2))
 		return blake2b_compress_sse2(S, block);
 	return blake2b_compress_ref(S, block);
